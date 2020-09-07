@@ -1,10 +1,9 @@
-
 'use strict';
 
-const path              = require('path');
+const path = require('path');
 const contentProcessors = require('../functions/contentProcessors');
-const utils             = require('./utils');
-const pageHandler       = require('./page');
+const utils = require('./utils');
+const pageHandler = require('./page');
 
 let instance = null;
 let stemmers = null;
@@ -12,9 +11,9 @@ let stemmers = null;
 function getLunr (config) {
   if (instance === null) {
     instance = require('lunr');
-    instance.TinySegmenter = require('tiny-segmenter');
     require('lunr-languages/lunr.stemmer.support')(instance);
     require('lunr-languages/lunr.multi')(instance);
+    require('lunr-languages/tinyseg')(instance);
     config.searchExtraLanguages.forEach(lang =>
       require('lunr-languages/lunr.' + lang)(instance)
     );
@@ -41,7 +40,7 @@ async function handler (query, config) {
   const documents = potentialDocuments
     .filter(doc => doc !== null);
 
-  const lunrInstance = getLunr(config);
+  const lunrInstance = getLunr (config);
   const idx = lunrInstance(function () {
     this.use(getStemmers(config));
     this.field('title');
